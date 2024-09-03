@@ -3,6 +3,7 @@ import java.util.PriorityQueue;
 
 public class Simulator {
     private PriorityQueue<Event> minHeap;
+    private PriorityQueue<Event> waiting;
     private ArrayList<Event> losses;
     private LinearCongruentialGenerator lcg;
     private int capacity;
@@ -20,14 +21,19 @@ public class Simulator {
         this.lcg = new LinearCongruentialGenerator();
         this.timeChegada = timeChegada;
         this.timeSaida = timeSaida;
+        this.waiting = new PriorityQueue<Event>();
     }
+
     public void chegada(Event event){
         acumulaTempo(event);
-        if(minHeap.size() < capacity){
-            minHeap.add(event);
-            System.out.println("ADICIONEI na fila");
+        if(waiting.size() < capacity){
             if(minHeap.size() <= servers) {
-                outEvent();
+                minHeap.poll();
+                outEvent(event);
+                System.out.println("RETIREI UMA CHEGADA");
+            } else{
+                waiting.add(event);
+                minHeap.poll();
             }
         }
         else{
@@ -38,33 +44,45 @@ public class Simulator {
     public void saida(Event event){
         acumulaTempo(event);
         minHeap.poll();
-        System.out.println("TIREI da fila");
+        System.out.println("RETIREI UMA SAIDA");
         if(minHeap.size() >= servers){
-            outEvent();
+            waiting.element().tempo = tempoGlobal;
+            outEvent(waiting.element());
         }
     }
 
     public Event nextEvent(){
+        Event event;
         if(minHeap.size() == 0 && tempoGlobal == 0){
             System.out.println("cria primeiro evento de CHEGADA");
-            return new Event(tempoGlobal+2, EventType.CHEGADA);
+            event = new Event(tempoGlobal+2, EventType.CHEGADA);
+            minHeap.add(event);
+            return event;
         }
+
         System.out.println("cria evento de CHEGADA");
         double tempoEvento = timeChegada[0] + ((timeChegada[1] - timeChegada[0]) * lcg.NextRandom());
-        return new Event(tempoGlobal+tempoEvento, EventType.CHEGADA);
+        event = new Event(tempoGlobal+tempoEvento, EventType.CHEGADA);
+        minHeap.add(event);
+
+        return minHeap.element();
     }
 
-    public Event outEvent(){
+    public Event outEvent(Event eventChegada){
         System.out.println("cria evento de SAIDA");
         double tempoEvento = timeSaida[0] + ((timeSaida[1] - timeSaida[0]) * lcg.NextRandom());
-        return new Event(tempoGlobal+tempoEvento, EventType.SAIDA);
+        Event eventSaida = new Event(eventChegada.tempo+tempoEvento, EventType.SAIDA);
+        minHeap.add(eventSaida);
+        return eventSaida;
     }
 
     public void acumulaTempo(Event event){
-        this.tempoGlobal += event.tempo;
+        this.tempoGlobal = event.tempo;
+        System.out.println("tempo global:" + tempoGlobal);
     }
 
     public void loss(Event event){
         losses.add(event);
+        System.out.println("perdeu hahaha");
     }
 }
