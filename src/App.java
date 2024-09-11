@@ -7,18 +7,20 @@ import java.util.PriorityQueue;
 
 public class App {
     public static void main(String[] args) {
-        PriorityQueue<Event> pq = new PriorityQueue<Event>();
-        int[] chegada = {2,5};
-        int[] saida = {3,5};
-        Simulator sim = new Simulator(pq, 5,1,chegada,saida);
-        int count = 10000;
+        PriorityQueue<Event> entradaPq = new PriorityQueue<Event>();
+        PriorityQueue<Event> saidaPq = new PriorityQueue<Event>();
+        PriorityQueue<Event> filaPq = new PriorityQueue<Event>();
+        int[] chegada = { 2, 5 };
+        int[] saida = { 3, 5 };
+        Simulator sim = new Simulator(entradaPq, saidaPq, filaPq, 5, 2, chegada, saida);
+        int count = 100;
         // Gera 10000 números pseudoaleatórios
         for (int i = 0; i < count; i++) {
             Event event = sim.nextEvent();
 
-            if(event.tipo == EventType.CHEGADA ){
+            if (event.tipo == EventType.CHEGADA) {
                 sim.chegada(event);
-            } else if(event.tipo == EventType.SAIDA ){
+            } else if (event.tipo == EventType.SAIDA) {
                 sim.saida(event);
             }
         }
