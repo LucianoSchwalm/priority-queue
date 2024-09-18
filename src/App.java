@@ -8,9 +8,9 @@ public class App {
         for (int i = 0; i < count; i++) {
             Event event = sim.nextEvent();
 
-            if(event.tipo == EventType.CHEGADA ){
+            if (event.tipo == EventType.CHEGADA) {
                 sim.chegada(event);
-            } else if(event.tipo == EventType.SAIDA ){
+            } else if (event.tipo == EventType.SAIDA) {
                 sim.saida(event);
             }
         }
