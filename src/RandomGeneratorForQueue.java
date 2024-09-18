@@ -1,4 +1,4 @@
-public class LinearCongruentialGenerator {
+public class RandomGeneratorForQueue {
     private static final long a = 1664525;
     private static final long c = 1013904223;
     private static final long M = 4294967296L; // 2^32
